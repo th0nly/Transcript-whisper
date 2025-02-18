@@ -1,0 +1,191 @@
+# Step 1: 创建 Conda 环境
+conda create -n whisper_env python=3.10 -y
+
+# Step 2: 激活环�?
+conda activate whisper_env
+
+# Step 3: 安装 PyTorch（确保根据硬件选择正确版本�?
+# 如果�? GPU，安装支�? CUDA 的版本（CUDA 11.8 示例�?
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# 如果只有 CPU，可以安�? CPU 版本
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+# Step 4: 安装 Whisper
+pip install openai-whisper
+
+# Step 5: 安装 FFmpeg（Whisper 依赖�?
+# Conda 安装 FFmpeg
+conda install -c conda-forge ffmpeg -y
+
+# 如果 Conda 安装有问题，也可以通过系统包管理器安装�?
+# Ubuntu: sudo apt update && sudo apt install ffmpeg
+# MacOS: brew install ffmpeg
+# Windows: 下载 ffmpeg 并配置环境变量：https://ffmpeg.org/download.html
+
+# Step 6: 测试 Whisper 是否成功安装
+python -c "import whisper; print(whisper.__version__)"
+
+安装cuda
+https://developer.nvidia.com/cuda-downloads?target_os=Windows&target_arch=x86_64&target_version=11&target_type=exe_local
+
+
+pip install pydub
+pip freeze > requirements.txt
+pip install ffmpeg-python
+import ffmpeg
+
+# 提取音频并保存为 MP3 格式
+ffmpeg.input("your_video_file.mp4").output("extracted_audio.mp3").run()
+
+# 提取音频并保存为 WAV 格式
+ffmpeg.input("your_video_file.mp4").output("extracted_audio.wav").run()
+
+
+1. 安装支持 CUDA �? PyTorch
+首先，确保安装了支持 CUDA �? PyTorch。你需要根据你�? CUDA 版本选择正确的安装命令（可以通过运行 nvidia-smi 查看 CUDA 版本）�?
+
+安装 CUDA 版本�? PyTorch
+以下是常见的安装命令�?
+
+# CUDA 11.8 示例
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# CUDA 11.7 示例
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
+
+
+4. Whisper 使用 GPU 的代�?
+Whisper 使用 PyTorch，因此可以通过 device 参数指定运行设备（cuda 表示 GPU，cpu 表示 CPU）�?
+
+示例代码�?
+python
+复制
+编辑
+import whisper
+
+# 加载模型并强制使�? GPU
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {device}")
+
+# 加载 Whisper 模型到指定设�?
+model = whisper.load_model("base", device=device)
+
+# 运行转录任务
+result = model.transcribe("your_audio_file.mp3", language="en")
+
+# 打印转录结果
+print("Transcription:")
+print(result["text"])
+
+5. 检查是否正在使�? GPU
+你可以通过以下方式确认 Whisper 是否�? GPU 上运行：
+
+观察运行速度：在 GPU 上运行比 CPU 快得多�?
+监控 GPU 使用：运行以下命令监�? GPU 使用情况�?
+bash
+复制
+编辑
+nvidia-smi
+在任务执行时，你应该能看�? GPU 的显存和计算利用率上升�?
+1. 联网情况分析
+不需要联网的情况
+如果你已经完成以下操作：
+成功安装�? Whisper (pip install openai-whisper)�?
+下载了所需的模型文件（�? base, tiny, large 等）�?
+此后所有语音转文本的处理都在本地进行，无需依赖外部网络�?
+需要联网的情况
+首次加载模型时：Whisper 会自动从 Hugging Face 的模型库下载对应的模型文件（如果本地不存在该模型）。模型文件下载完成后会缓存在本地的路径：
+javascript
+复制
+编辑
+~/.cache/whisper
+例如：加�? base 模型时会下载一个约 140 MB 的文件�?
+库安装时：首次安�? Whisper 和其依赖（如 torch）需要联网�?
+1. 安装 Jupyter Notebook 的必要库
+安装 Jupyter Notebook
+可以通过 conda �? pip 安装�?
+
+使用 conda 安装�?
+
+bash
+复制
+编辑
+conda install jupyter notebook
+
+安装 ipykernel（推荐）
+如果你打算用 Conda 创建的虚拟环境作�? Jupyter Notebook 的内核，需要安�? ipykernel�?
+
+bash
+复制
+编辑
+pip install ipykernel
+添加环境�? Jupyter 内核
+在安装完 ipykernel 后，运行以下命令将当前环境添加到 Jupyter Notebook 的可选内核中�?
+
+bash
+复制
+编辑
+python -m ipykernel install --user --name=whisper_env --display-name "Python (whisper_env)"
+--name=whisper_env: 指定环境名称�?
+--display-name: �? Jupyter Notebook 中显示的名称�?
+
+
+
+
+Whisper 模型及其�? Hugging Face 模型下载�? .cache 目录而不�? Conda 环境目录的原因是为了 缓存和共享模型文件，而不与每个环境的特定文件夹绑定�?
+
+主要原因�?
+模型共享�?
+
+.cache 目录�? Hugging Face 库的 默认缓存位置。当你下载了模型后，这些文件会被缓存下来。下次加载相同的模型时，库会直接从缓存中读取，而不是重新下载。这样可以节省带宽和时间，且多个 Conda 环境可以共享相同的模型文件�?
+如果模型存储�? env 的目录中，那么每次在不同�? Conda 环境中使用时都需要重新下载和存储相同的模型文件，这会导致不必要的磁盘空间浪费和下载时间增加�?
+避免环境污染�?
+
+将模型存储在 env 目录下可能会让你�? Conda 环境变得杂乱无章。env 目录主要用于存储该环境的库和依赖，而将模型存储�? .cache 中能保持环境目录的干净与专一�?
+.cache 目录作为缓存目录，专门用于存放下载的模型、数据等文件。它与环境本身的库文件是分开的�?
+跨环境共享：
+
+如果你有多个 Conda 环境，而每个环境都使用相同的模型，使用 .cache 可以避免每个环境都单独存储一份相同的模型文件。这样，你只需下载一次模型，其他环境可以直接访问缓存，而无需重复下载�?
+既然好处这么多那我就不改�?
+
+下载的大模型在这里C:\Users\Sean\.cache\whisper\large-v3.pt
+
+import os
+
+# 设置缓存目录为你自定义的路径
+os.environ['TRANSFORMERS_CACHE'] = '/path/to/your/custom/cache'
+
+# 然后再加载模�?
+import whisper
+model = whisper.load_model("large").to("cuda")
+只对当前环境有效：在你运行的那个 Python 脚本中，TRANSFORMERS_CACHE 环境变量的值会被设置为指定的路径。但当你退出该脚本或关�? Python 会话后，环境变量设置就会失效，下次运行时需要重新设置�?
+
+如何使设置永久生效？
+如果你希望环境变量的设置在每次运行时都生效，可以通过以下方式之一来实现：
+
+1. �? Conda 环境中永久设置（仅限该环境）
+激活你�? Conda 环境�?
+
+bash
+复制代码
+conda activate your_environment_name
+创建或编辑环境的激活脚本，在该脚本中设置环境变量：
+
+Linux/Mac�?
+bash
+复制代码
+nano ~/.conda/envs/your_environment_name/etc/conda/activate.d/env_vars.sh
+Windows�? 在环境的 Scripts 目录下创建一个批处理脚本（例�? env_vars.bat）：
+bash
+复制代码
+nano C:\Users\<YourUsername>\Anaconda3\envs\your_environment_name\Scripts\env_vars.bat
+在脚本中添加�?
+
+bash
+复制代码
+export TRANSFORMERS_CACHE=/path/to/your/custom/cache  # Linux/Mac
+set TRANSFORMERS_CACHE=D:\path\to\your\custom\cache  # Windows
+保存并关闭脚本�?
+
+这样设置之后，每次激活该 Conda 环境时，环境变量 TRANSFORMERS_CACHE 会被自动设置为你指定的路�?
