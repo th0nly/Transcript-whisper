@@ -122,6 +122,13 @@ git config --global core.autocrlf input
 你可以通过以下命令来设置 Git：
 git config --global core.autocrlf true
 
+6. 查看本地分支
+git log --all --decorate --oneline --graph 是一个 Git 命令，用于以图形化的形式查看提交历史。它显示了所有分支的提交记录，简化了输出，并且用图形表示分支的合并情况。各个参数的含义如下：
+
+--all: 显示所有分支的提交，而不仅仅是当前分支。
+--decorate: 在提交记录旁边显示分支、标签等信息。
+--oneline: 简化每个提交的输出，只显示简短的提交哈希和提交信息。
+--graph: 以图形方式显示分支历史。
 
 
 
