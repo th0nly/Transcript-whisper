@@ -77,6 +77,11 @@ git add .
 git commit -m "注释（可以任意）" 这一步已经在本地窗口了
 这一步才是推到远程，前面是名字，后面是branch
 git push origin master
+把本地的 master 分支推送到远程仓库（origin），并更新远程的 master 分支 master就是两边相同
+git push origin master:main
+才是将本地master推到远程main
+不写成这样默认两边对齐
+
 
 
 5. 分支管理
